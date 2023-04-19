@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'activesupport', '~> 7.0', '>= 7.0.4.3'
+  spec.add_dependency 'activesupport', '~> 5.0', '>= 5.0'
   spec.add_dependency 'colorize', '~> 0.8.1'
   spec.add_dependency 'hashie', '~> 5.0'
   spec.add_dependency 'shale', '~> 0.9.0'
