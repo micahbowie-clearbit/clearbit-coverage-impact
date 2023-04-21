@@ -11,6 +11,7 @@ require_relative 'storable'
 
 module Clearbit
   module CoverageImpact
+    # Clearbit::CoverageImpact::Comparison
     class Comparison
       extend Forwardable
       include CoverageImpact::Storable
@@ -69,12 +70,7 @@ module Clearbit
       end
 
       def analyze
-        header = [%w[name change unchanged nil_to_value value_to_nil]]
-        rows = analysis.each_with_object([]) do |ar, obj|
-          obj << [ar.name, ar.percent_of_change, ar.percent_of_unchanged, ar.percent_of_change_from_nil_to_value, ar.percent_of_change_from_value_to_nil]
-        end
-        table = ::Terminal::Table.new(title: "Super helpful data", headings: header, rows: rows)
-        puts table
+        Clearbit::CoverageImpact::Analyze.print_analysis(data.rows)
       end
 
       def analysis
@@ -106,41 +102,3 @@ module Clearbit
     end
   end
 end
-
-comparison = Clearbit::CoverageImpact::Comparison.create do |config|
-  config.data_points = %w[domain employee_count linkedin]
-end
-
-comparison.establish_before_values do
-  counter = 0
-  domains = [nil, 'clearbit.io', 'google.com', 'openai.com']
-
-  domains.each_with_index do |c, i|
-    @row_id = counter
-    @domain = c
-    @employee_count = rand(0..10)
-    @linkedin = ['clearbit', 'clearbit', 'google', 'openai'][i]
-    add_before_row
-    counter += 1
-  end
-end
-
-comparison.define_operation do
-  puts 'this is the middle operation'
-end
-
-comparison.establish_after_values do
-  counter = 0
-  domains = ['clearbit.com', 'clearbit.io', 'google.com', 'openai.com']
-
-  domains.each_with_index do |c, i|
-    @row_id = counter
-    @domain = i == 2 ? nil : c
-    @employee_count = rand(0..10)
-    @linkedin = "#{['clearbit', 'clearbit', 'google', 'openai'][i]}_#{rand(0..9)}"
-    add_after_row
-    counter += 1
-  end
-end
-
-comparison.execute!

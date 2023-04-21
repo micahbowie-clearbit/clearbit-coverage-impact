@@ -1,35 +1,38 @@
 # frozen_string_literal: true
-require 'hashie'
 
 module Clearbit
   module CoverageImpact
     # Clearbit::CoverageImpact::DataAnalyzation
     class DataAnalyzation
-      attr_reader :name, :total, :change, :no_change, :nil_to_value_change, :value_to_nil_change
+      attr_reader :name, :total, :change, :no_change, :added, :dropped
 
-      def initialize(name:, change: nil, no_change: nil, nil_to_value_change: nil, value_to_nil_change: nil)
+      def initialize(name:, change: nil, no_change: nil, added: nil, dropped: nil)
         @name = name
         @change = change
         @no_change = no_change
-        @nil_to_value_change = nil_to_value_change
-        @value_to_nil_change = value_to_nil_change
+        @added = added
+        @dropped = dropped
         @total = (change + no_change)
       end
 
       def percent_of_change
-        (change.to_f / total.to_f) * 100
+        percent = ((change.to_f / total) * 100).ceil
+        "#{percent}%"
       end
 
       def percent_of_unchanged
-        (no_change.to_f / total.to_f) * 100
+        percent = ((no_change.to_f / total) * 100).ceil
+        "#{percent}%"
       end
 
-      def percent_of_change_from_nil_to_value
-        (nil_to_value_change.to_f / total.to_f) * 100
+      def percent_of_added
+        percent = ((added.to_f / total) * 100).ceil
+        "#{percent}%"
       end
 
-      def percent_of_change_from_value_to_nil
-        (value_to_nil_change.to_f / total.to_f) * 100
+      def percent_of_dropped
+        percent = ((dropped.to_f / total) * 100).ceil
+        "#{percent}%"
       end
     end
   end

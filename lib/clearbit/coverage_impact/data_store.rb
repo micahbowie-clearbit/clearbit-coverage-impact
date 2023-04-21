@@ -23,21 +23,29 @@ module Clearbit
       def set_data!(data)
         return unless data.present?
 
-        data.each do |key, value|
-          self[key] = DataRow.new(value) unless self[key]
+        data.each do |key, row|
+          self[key] = DataRow.new(row) unless self[key]
 
           self[key]
         end
+        self
       end
     end
 
     # Clearbit::CoverageImpact:DataRow
     class DataRow < Array
-      include Hashie::Extensions::DeepLocate
+      include ::Hashie::Extensions::DeepLocate
+      include ::Hashie::Extensions::DeepFind
 
       def create_column(data_point_name:, value:, type:)
-        self << { data_point_name: data_point_name, value: value, type: type }
+        self << DataColumn.new(data_point_name: data_point_name, value: value, type: type)
       end
+    end
+
+    # Clearbit::CoverageImpact:DataColumn
+    class DataColumn < Hash
+      include Hashie::Extensions::MergeInitializer
+      include ::Hashie::Extensions::IndifferentAccess
     end
 
     # Clearbit::CoverageImpact::DataStore
